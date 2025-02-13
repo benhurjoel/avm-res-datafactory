@@ -103,7 +103,7 @@ resource "azurerm_data_factory_credential_user_managed_identity" "this" {
 resource "azurerm_data_factory_integration_runtime_self_hosted" "this" {
   for_each = var.integration_runtime_self_hosted
 
-  data_factory_id                              = each.value.data_factory_id
+  data_factory_id                              = azurerm_data_factory.this.id
   name                                         = each.value.name
   description                                  = each.value.description
   self_contained_interactive_authoring_enabled = each.value.self_contained_interactive_authoring_enabled
