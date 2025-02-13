@@ -306,3 +306,31 @@ variable "linked_service_data_lake_storage_gen2" {
     - `tenant` - (Optional) The tenant ID where the service principal exists. **Required if** `service_principal_id` **is set.**
   DESCRIPTION
 }
+
+variable "linked_service_key_vault" {
+  type = map(object({
+    name                     = string
+    data_factory_id          = string
+    key_vault_id             = string
+    description              = optional(string, null)
+    integration_runtime_name = optional(string, null)
+    annotations              = optional(list(string), null)
+    parameters               = optional(map(string), null)
+    additional_properties    = optional(map(string), null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Linked Services for Azure Key Vault, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the linked service.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+    - `key_vault_id` - (Required) The ID of the Azure Key Vault resource.
+    - `description` - (Optional) A description of the linked service.
+    - `integration_runtime_name` - (Optional) The integration runtime reference.
+    - `annotations` - (Optional) A list of tags to annotate the linked service.
+    - `parameters` - (Optional) A map of parameters.
+    - `additional_properties` - (Optional) Additional custom properties.
+  DESCRIPTION
+}
