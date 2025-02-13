@@ -40,7 +40,7 @@ resource "azurerm_data_factory_linked_service_databricks" "this" {
   for_each = var.linked_service_databricks
 
   adb_domain               = each.value.adb_domain
-  data_factory_id          = each.value.data_factory_id
+  data_factory_id          = azurerm_data_factory.this.id
   name                     = each.value.name
   additional_properties    = each.value.additional_properties
   annotations              = each.value.annotations
@@ -86,6 +86,31 @@ resource "azurerm_data_factory_linked_service_databricks" "this" {
       custom_tags                 = new_cluster_config.value.custom_tags
       init_scripts                = new_cluster_config.value.init_scripts
       log_destination             = new_cluster_config.value.log_destination
+    }
+  }
+}
+
+resource "azurerm_data_factory_linked_service_azure_file_storage" "this" {
+  for_each = var.linked_service_azure_file_storage
+
+  name                     = each.value.name
+  data_factory_id          = azurerm_data_factory.this.id
+  description              = each.value.description
+  host                     = each.value.host
+  integration_runtime_name = each.value.integration_runtime_name
+  annotations              = each.value.annotations
+  parameters               = each.value.parameters
+  password                 = each.value.password
+  user_id                  = each.value.user_id
+  additional_properties    = each.value.additional_properties
+  connection_string        = each.value.connection_string
+  file_share               = each.value.file_share
+
+  dynamic "key_vault_password" {
+    for_each = each.value.key_vault_password != null ? [each.value.key_vault_password] : []
+    content {
+      linked_service_name = key_vault_password.value.linked_service_name
+      secret_name         = key_vault_password.value.secret_name
     }
   }
 }

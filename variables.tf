@@ -167,3 +167,48 @@ variable "linked_service_databricks" {
       - `log_destination` - (Optional) Log storage location.
     DESCRIPTION
 }
+
+variable "linked_service_azure_file_storage" {
+  type = map(object({
+    name                     = string
+    data_factory_id          = string
+    description              = optional(string, null)
+    host                     = optional(string, null)
+    integration_runtime_name = optional(string, null)
+    annotations              = optional(list(string), null)
+    parameters               = optional(map(string), null)
+    password                 = optional(string, null)
+    user_id                  = optional(string, null)
+    additional_properties    = optional(map(string), null)
+    connection_string        = string
+    file_share               = optional(string, null)
+    key_vault_password = optional(object({
+      linked_service_name = string
+      secret_name         = string
+    }), null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Linked Services for Azure File Storage, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the linked service.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+    - `description` - (Optional) A description of the linked service.
+    - `host` - (Optional) The Host name of the server.
+    - `integration_runtime_name` - (Optional) The integration runtime reference.
+    - `annotations` - (Optional) A list of tags to annotate the linked service.
+    - `parameters` - (Optional) A map of parameters.
+    - `password` - (Optional) The password to log in to the server.
+    - `user_id` - (Optional) The user ID to log in to the server.
+    - `additional_properties` - (Optional) Additional custom properties.
+    - `connection_string` - (Required) The connection string.
+    - `file_share` - (Optional) The name of the file share.
+
+    ### Key Vault Password Block:
+    - `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure File Storage password.
+      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+      - `secret_name` - (Required) The secret storing the Azure File Storage password.
+    DESCRIPTION
+}
