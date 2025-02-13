@@ -20,6 +20,123 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
+variable "managed_virtual_network_enabled" {
+  description = "Is Managed Virtual Network enabled?"
+  type        = bool
+  default     = false
+}
+
+variable "public_network_enabled" {
+  description = "Is the Data Factory visible to the public network?"
+  type        = bool
+  default     = true
+}
+
+variable "customer_managed_key_id" {
+  description = "Specifies the Azure Key Vault Key ID to be used as the Customer Managed Key (CMK). Required with user assigned identity."
+  type        = string
+  default     = null
+}
+
+variable "customer_managed_key_identity_id" {
+  description = "Specifies the ID of the user assigned identity associated with the Customer Managed Key. Must be supplied if customer_managed_key_id is set."
+  type        = string
+  default     = null
+}
+
+variable "purview_id" {
+  description = "Specifies the ID of the purview account resource associated with the Data Factory."
+  type        = string
+  default     = null
+}
+
+variable "identity" {
+  type = object({
+    type         = string
+    identity_ids = optional(list(string), [])
+  })
+  default     = null
+  description = <<DESCRIPTION
+    Defines the Managed Service Identity for the Data Factory.
+    - type: Specifies the type of Managed Service Identity. Possible values: SystemAssigned, UserAssigned, or both.
+    - identity_ids: A list of User Assigned Managed Identity IDs. Required if type includes UserAssigned.
+    DESCRIPTION
+}
+
+
+variable "github_configuration" {
+  type = object({
+    account_name       = string
+    branch_name        = string
+    git_url            = optional(string, null)
+    repository_name    = string
+    root_folder        = string
+    publishing_enabled = optional(bool, true)
+  })
+  default = null
+
+  description = <<DESCRIPTION
+  Defines the GitHub configuration for the Data Factory.
+  - account_name: Specifies the GitHub account name.
+  - branch_name: Specifies the branch of the repository to get code from.
+  - git_url: Specifies the GitHub Enterprise host name. Defaults to https://github.com for open source repositories.
+  - repository_name: Specifies the name of the git repository.
+  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
+  - publishing_enabled: Is automated publishing enabled? Defaults to true.
+  **You must log in to the Data Factory management UI to complete the authentication to the GitHub repository.**
+  DESCRIPTION
+}
+
+
+variable "vsts_configuration" {
+  type = object({
+    account_name       = string
+    branch_name        = string
+    project_name       = string
+    repository_name    = string
+    root_folder        = string
+    tenant_id          = string
+    publishing_enabled = optional(bool, true)
+  })
+  default = null
+
+  description = <<DESCRIPTION
+  Defines the VSTS configuration for the Data Factory.
+  - account_name: Specifies the VSTS account name.
+  - branch_name: Specifies the branch of the repository to get code from.
+  - project_name: Specifies the name of the VSTS project.
+  - repository_name: Specifies the name of the git repository.
+  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
+  - tenant_id: Specifies the Tenant ID associated with the VSTS account.
+  - publishing_enabled: Is automated publishing enabled? Defaults to true.
+  DESCRIPTION
+}
+
+
+variable "global_parameters" {
+  type = list(object({
+    name  = string
+    type  = string
+    value = any
+  }))
+  default = []
+
+  description = <<DESCRIPTION
+  Defines a list of global parameters for the Data Factory.
+  - name: Specifies the global parameter name.
+  - type: Specifies the global parameter type. Possible values: Array, Bool, Float, Int, Object, or String.
+  - value: Specifies the global parameter value.
+  **For type Array and Object, it is recommended to use jsonencode() for the value.**
+  DESCRIPTION
+}
+
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}
+
 variable "credential_service_principal" {
   type = map(object({
     name                 = string
