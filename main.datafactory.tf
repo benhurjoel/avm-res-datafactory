@@ -89,3 +89,13 @@ resource "azurerm_data_factory_credential" "this" {
     }
   }
 }
+
+resource "azurerm_data_factory_credential_user_managed_identity" "this" {
+  for_each = var.data_factory_credential_user_managed_identity
+
+  name            = each.value.name
+  data_factory_id = azurerm_data_factory.this.id
+  identity_id     = each.value.identity_id
+  annotations     = each.value.annotations
+  description     = each.value.description
+}

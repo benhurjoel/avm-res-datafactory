@@ -54,6 +54,28 @@ variable "data_factory_credential" {
   DESCRIPTION
 }
 
+variable "data_factory_credential_user_managed_identity" {
+  type = map(object({
+    name            = string
+    data_factory_id = string
+    identity_id     = string
+    annotations     = optional(list(string), null)
+    description     = optional(string, null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Credentials using User Assigned Managed Identity, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the credential.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
+    - `identity_id` - (Required) The Resource ID of an existing User Assigned Managed Identity. **Attempting to create a Credential resource without first assigning the identity to the parent Data Factory will result in an Azure API error.**
+    - `annotations` - (Optional) A list of tags to annotate the credential. **Manually altering the resource may cause annotations to be lost.**
+    - `description` - (Optional) A description of the credential.
+  DESCRIPTION
+}
+
 variable "linked_service_azure_blob_storage" {
   type = map(object({
     name                       = string
