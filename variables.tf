@@ -212,3 +212,57 @@ variable "linked_service_azure_file_storage" {
       - `secret_name` - (Required) The secret storing the Azure File Storage password.
     DESCRIPTION
 }
+
+variable "linked_service_azure_sql_database" {
+  type = map(object({
+    name                     = string
+    data_factory_id          = string
+    connection_string        = optional(string, null)
+    use_managed_identity     = optional(bool, null)
+    service_principal_id     = optional(string, null)
+    service_principal_key    = optional(string, null)
+    tenant_id                = optional(string, null)
+    description              = optional(string, null)
+    integration_runtime_name = optional(string, null)
+    annotations              = optional(list(string), null)
+    parameters               = optional(map(string), null)
+    additional_properties    = optional(map(string), null)
+    credential_name          = optional(string, null)
+
+    key_vault_connection_string = optional(object({
+      linked_service_name = string
+      secret_name         = string
+    }), null)
+
+    key_vault_password = optional(object({
+      linked_service_name = string
+      secret_name         = string
+    }), null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Linked Services for Azure SQL Database, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the linked service.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+    - `connection_string` - (Optional) The connection string used to authenticate with Azure SQL Database. **Exactly one of** `connection_string` **or** `key_vault_connection_string` **must be specified.**
+    - `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id` **and** `service_principal_key`.
+    - `service_principal_id` - (Optional) The service principal ID for authentication. **Required if** `service_principal_key` **is set.**
+    - `service_principal_key` - (Optional) The service principal key (password) for authentication. **Required if** `service_principal_id` **is set.**
+    - `tenant_id` - (Optional) The tenant ID for authentication.
+    - `description` - (Optional) A description of the linked service.
+    - `integration_runtime_name` - (Optional) The integration runtime reference.
+    - `annotations` - (Optional) A list of tags to annotate the linked service.
+    - `parameters` - (Optional) A map of parameters.
+    - `additional_properties` - (Optional) Additional custom properties.
+    - `credential_name` - (Optional) The name of a User-assigned Managed Identity for authentication.
+    - `key_vault_connection_string` - (Optional) Use an existing Key Vault to store the Azure SQL Database connection string.
+      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+      - `secret_name` - (Required) The secret storing the SQL Server connection string.
+    - `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure SQL Database password.
+      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+      - `secret_name` - (Required) The secret storing the SQL Server password.
+  DESCRIPTION
+}
