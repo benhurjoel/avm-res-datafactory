@@ -10,20 +10,22 @@ resource "azurerm_private_endpoint" "this_managed_dns_zone_groups" {
 
   private_service_connection {
     is_manual_connection           = false
-    name                           = each.value.private_service_connection_name != null ? each.value.private_service_connection_name : "pse-${var.name}"
-    private_connection_resource_id = azurerm_redis_cache.this.id
-    subresource_names              = ["redisCache"]
+    name                           = each.value.private_service_connection_name != null ? each.value.private_service_connection_name : "psc-${var.name}"
+    private_connection_resource_id = azurerm_data_factory.this.id
+    subresource_names              = ["dataFactory"]
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
     content {
       name               = ip_configuration.value.name
       private_ip_address = ip_configuration.value.private_ip_address
-      member_name        = "Azure redis cache"
-      subresource_name   = "redisCache"
+      member_name        = "Azure Data Factory"
+      subresource_name   = "dataFactory"
     }
   }
+
   dynamic "private_dns_zone_group" {
     for_each = length(each.value.private_dns_zone_resource_ids) > 0 ? ["this"] : []
 
@@ -46,21 +48,23 @@ resource "azurerm_private_endpoint" "this_unmanaged_dns_zone_groups" {
 
   private_service_connection {
     is_manual_connection           = false
-    name                           = each.value.private_service_connection_name != null ? each.value.private_service_connection_name : "pse-${var.name}"
-    private_connection_resource_id = azurerm_redis_cache.this.id
-    subresource_names              = ["redisCache"]
+    name                           = each.value.private_service_connection_name != null ? each.value.private_service_connection_name : "psc-${var.name}"
+    private_connection_resource_id = azurerm_data_factory.this.id
+    subresource_names              = ["dataFactory"]
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
     content {
       name               = ip_configuration.value.name
       private_ip_address = ip_configuration.value.private_ip_address
-      member_name        = "Azure redis cache"
-      subresource_name   = "redisCache"
+      member_name        = "Azure Data Factory"
+      subresource_name   = "dataFactory"
     }
   }
 }
+
 
 
 

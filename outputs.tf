@@ -1,6 +1,6 @@
 output "name" {
-  description = "The name of the redis resource"
-  value       = azurerm_redis_cache.this.name
+  description = "The name of the Data Factory resource"
+  value       = azurerm_data_factory.this.name
 }
 
 output "private_endpoints" {
@@ -12,11 +12,10 @@ output "private_endpoints" {
 # https://azure.github.io/Azure-Verified-Modules/specs/terraform/#id-tffr2---category-outputs---additional-terraform-outputs
 output "resource" {
   description = "This is the full output for the resource."
-  value       = azurerm_redis_cache.this
+  value       = azurerm_data_factory.this
 }
 
 output "resource_id" {
-  description = "The resource id of the redis cache resource."
-  value       = azurerm_redis_cache.this.id
+  description = "The resource id of the Data Factory resource."
+  value       = azurerm_data_factory.this.id
 }
-

@@ -241,13 +241,13 @@ variable "linked_service_azure_blob_storage" {
     key_vault_sas_token = optional(object({
       linked_service_name = string
       secret_name         = string
-    }), [])
+    }), null)
 
     # Service Principal Linked Key Vault Key (Optional)
     service_principal_linked_key_vault_key = optional(object({
       linked_service_name = string
       secret_name         = string
-    }), [])
+    }), null)
   }))
   default = {}
 

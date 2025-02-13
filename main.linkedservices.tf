@@ -130,7 +130,7 @@ resource "azurerm_data_factory_linked_service_azure_sql_database" "this" {
   annotations              = each.value.annotations
   parameters               = each.value.parameters
   additional_properties    = each.value.additional_properties
-  credential_name          = each.value.credential_name
+  # credential_name          = each.value.credential_name # Available only from version 4.0.0 onwards
 
   dynamic "key_vault_connection_string" {
     for_each = each.value.key_vault_connection_string != null ? [each.value.key_vault_connection_string] : []
