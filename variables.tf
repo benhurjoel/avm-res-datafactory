@@ -20,6 +20,40 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
+variable "data_factory_credential" {
+  type = map(object({
+    name                 = string
+    data_factory_id      = string
+    tenant_id            = string
+    service_principal_id = string
+    annotations          = optional(list(string), null)
+    description          = optional(string, null)
+
+    service_principal_key = optional(object({
+      linked_service_name = string
+      secret_name         = string
+      secret_version      = optional(string, null)
+    }), null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Credentials, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the credential.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
+    - `tenant_id` - (Required) The Tenant ID of the Service Principal.
+    - `service_principal_id` - (Required) The Client ID of the Service Principal.
+    - `annotations` - (Optional) A list of tags to annotate the credential.
+    - `description` - (Optional) A description of the credential.
+    - `service_principal_key` - (Optional) A block defining the service principal key details.
+      - `linked_service_name` - (Required) The name of the Linked Service to use for the Service Principal Key.
+      - `secret_name` - (Required) The name of the Secret in the Key Vault.
+      - `secret_version` - (Optional) The version of the Secret in the Key Vault.
+  DESCRIPTION
+}
+
 variable "linked_service_azure_blob_storage" {
   type = map(object({
     name                       = string

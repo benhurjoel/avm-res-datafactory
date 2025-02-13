@@ -69,3 +69,23 @@ resource "azurerm_management_lock" "this" {
     azurerm_data_factory.this
   ]
 }
+
+resource "azurerm_data_factory_credential" "this" {
+  for_each = var.data_factory_credential
+
+  name                 = each.value.name
+  data_factory_id      = azurerm_data_factory.this.id
+  tenant_id            = each.value.tenant_id
+  service_principal_id = each.value.service_principal_id
+  annotations          = each.value.annotations
+  description          = each.value.description
+
+  dynamic "service_principal_key" {
+    for_each = each.value.service_principal_key != null ? [each.value.service_principal_key] : []
+    content {
+      linked_service_name = service_principal_key.value.linked_service_name
+      secret_name         = service_principal_key.value.secret_name
+      secret_version      = service_principal_key.value.secret_version
+    }
+  }
+}
