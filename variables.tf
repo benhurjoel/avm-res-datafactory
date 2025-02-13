@@ -20,7 +20,7 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
-variable "data_factory_credential" {
+variable "credential_service_principal" {
   type = map(object({
     name                 = string
     data_factory_id      = string
@@ -54,7 +54,7 @@ variable "data_factory_credential" {
   DESCRIPTION
 }
 
-variable "data_factory_credential_user_managed_identity" {
+variable "credential_user_managed_identity" {
   type = map(object({
     name            = string
     data_factory_id = string
@@ -73,6 +73,32 @@ variable "data_factory_credential_user_managed_identity" {
     - `identity_id` - (Required) The Resource ID of an existing User Assigned Managed Identity. **Attempting to create a Credential resource without first assigning the identity to the parent Data Factory will result in an Azure API error.**
     - `annotations` - (Optional) A list of tags to annotate the credential. **Manually altering the resource may cause annotations to be lost.**
     - `description` - (Optional) A description of the credential.
+  DESCRIPTION
+}
+
+variable "integration_runtime_self_hosted" {
+  type = map(object({
+    data_factory_id                              = string
+    name                                         = string
+    description                                  = optional(string, null)
+    self_contained_interactive_authoring_enabled = optional(bool, null)
+    rbac_authorization = optional(object({
+      resource_id = string
+    }), null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Self-hosted Integration Runtimes, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `data_factory_id` - (Required) The ID of the Data Factory where the integration runtime is associated.
+    - `name` - (Required) The unique name of the integration runtime. Changing this forces a new resource to be created.
+    - `description` - (Optional) A description of the integration runtime.
+    - `self_contained_interactive_authoring_enabled` - (Optional) Specifies whether to enable interactive authoring when the self-hosted integration runtime cannot establish a connection with Azure Relay.
+    - `rbac_authorization` - (Optional) Defines RBAC authorization settings. Changing this forces a new resource to be created.
+      - `resource_id` - (Required) The resource identifier of the integration runtime to be shared.
+      **Note:** RBAC Authorization creates a linked Self-hosted Integration Runtime targeting the Shared Self-hosted Integration Runtime in `resource_id`. The linked Self-hosted Integration Runtime requires Contributor access to the Shared Self-hosted Data Factory.
   DESCRIPTION
 }
 

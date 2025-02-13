@@ -70,8 +70,8 @@ resource "azurerm_management_lock" "this" {
   ]
 }
 
-resource "azurerm_data_factory_credential" "this" {
-  for_each = var.data_factory_credential
+resource "azurerm_data_factory_credential_service_principal" "this" {
+  for_each = var.credential_service_principal
 
   name                 = each.value.name
   data_factory_id      = azurerm_data_factory.this.id
@@ -91,11 +91,27 @@ resource "azurerm_data_factory_credential" "this" {
 }
 
 resource "azurerm_data_factory_credential_user_managed_identity" "this" {
-  for_each = var.data_factory_credential_user_managed_identity
+  for_each = var.credential_user_managed_identity
 
   name            = each.value.name
   data_factory_id = azurerm_data_factory.this.id
   identity_id     = each.value.identity_id
   annotations     = each.value.annotations
   description     = each.value.description
+}
+
+resource "azurerm_data_factory_integration_runtime_self_hosted" "this" {
+  for_each = var.integration_runtime_self_hosted
+
+  data_factory_id                              = each.value.data_factory_id
+  name                                         = each.value.name
+  description                                  = each.value.description
+  self_contained_interactive_authoring_enabled = each.value.self_contained_interactive_authoring_enabled
+
+  dynamic "rbac_authorization" {
+    for_each = each.value.rbac_authorization != null ? [each.value.rbac_authorization] : []
+    content {
+      resource_id = rbac_authorization.value.resource_id
+    }
+  }
 }

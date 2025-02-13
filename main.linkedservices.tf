@@ -36,7 +36,7 @@ resource "azurerm_data_factory_linked_service_azure_blob_storage" "this" {
   }
 }
 
-resource "azurerm_data_factory_linked_service_databricks" "this" {
+resource "azurerm_data_factory_linked_service_azure_databricks" "this" {
   for_each = var.linked_service_databricks
 
   adb_domain               = each.value.adb_domain
