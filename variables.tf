@@ -266,3 +266,43 @@ variable "linked_service_azure_sql_database" {
       - `secret_name` - (Required) The secret storing the SQL Server password.
   DESCRIPTION
 }
+
+variable "linked_service_data_lake_storage_gen2" {
+  type = map(object({
+    name                     = string
+    data_factory_id          = string
+    description              = optional(string, null)
+    integration_runtime_name = optional(string, null)
+    annotations              = optional(list(string), null)
+    parameters               = optional(map(string), null)
+    additional_properties    = optional(map(string), null)
+    url                      = string
+    storage_account_key      = optional(string, null)
+    use_managed_identity     = optional(bool, null)
+    service_principal_id     = optional(string, null)
+    service_principal_key    = optional(string, null)
+    tenant                   = optional(string, null)
+  }))
+  default = {}
+
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Linked Services for Data Lake Storage Gen2, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `name` - (Required) The unique name of the linked service.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+    - `description` - (Optional) A description of the linked service.
+    - `integration_runtime_name` - (Optional) The integration runtime reference.
+    - `annotations` - (Optional) A list of tags to annotate the linked service.
+    - `parameters` - (Optional) A map of parameters.
+    - `additional_properties` - (Optional) Additional custom properties.
+    - `url` - (Required) The endpoint for the Azure Data Lake Storage Gen2 service.
+
+    ### Authentication Options (Only one can be set):
+    - `storage_account_key` - (Optional) The Storage Account Key used for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `use_managed_identity`.
+    - `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `storage_account_key`.
+    - `service_principal_id` - (Optional) The service principal ID used for authentication. **Incompatible with** `storage_account_key` and `use_managed_identity`.
+    - `service_principal_key` - (Optional) The service principal key used for authentication. **Required if** `service_principal_id` **is set.**
+    - `tenant` - (Optional) The tenant ID where the service principal exists. **Required if** `service_principal_id` **is set.**
+  DESCRIPTION
+}
