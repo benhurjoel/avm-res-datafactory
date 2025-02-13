@@ -494,8 +494,35 @@ variable "enable_telemetry" {
   type        = bool
   default     = true
   description = <<DESCRIPTION
-This variable controls whether or not telemetry is enabled for the module.
-For more information see <https://aka.ms/avm/telemetryinfo>.
-If it is set to false, then no telemetry will be collected.
-DESCRIPTION
+    This variable controls whether or not telemetry is enabled for the module.
+    For more information see <https://aka.ms/avm/telemetryinfo>.
+    If it is set to false, then no telemetry will be collected.
+    DESCRIPTION
+}
+
+variable "lock" {
+  type = object({
+    kind = string
+    name = optional(string, null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+    Controls the Resource Lock configuration for this resource. The following properties can be specified:
+
+    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+
+    Example Input:
+    ```hcl
+    lock = {
+      kind = "CanNotDelete"
+      name = "Delete"
+    }
+    ```
+    DESCRIPTION
+
+  validation {
+    condition     = var.lock != null ? contains(["CanNotDelete", "ReadOnly"], var.lock.kind) : true
+    error_message = "Lock kind must be either `\"CanNotDelete\"` or `\"ReadOnly\"`."
+  }
 }
