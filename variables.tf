@@ -140,7 +140,7 @@ variable "tags" {
 variable "credential_service_principal" {
   type = map(object({
     name                 = string
-    data_factory_id      = string
+    data_factory_id      = optional(string)
     tenant_id            = string
     service_principal_id = string
     annotations          = optional(list(string), null)
@@ -174,7 +174,7 @@ variable "credential_service_principal" {
 variable "credential_user_managed_identity" {
   type = map(object({
     name            = string
-    data_factory_id = string
+    data_factory_id = optional(string)
     identity_id     = string
     annotations     = optional(list(string), null)
     description     = optional(string, null)
@@ -195,7 +195,7 @@ variable "credential_user_managed_identity" {
 
 variable "integration_runtime_self_hosted" {
   type = map(object({
-    data_factory_id                              = string
+    data_factory_id                              = optional(string)
     name                                         = string
     description                                  = optional(string, null)
     self_contained_interactive_authoring_enabled = optional(bool, null)
@@ -291,7 +291,7 @@ variable "linked_service_azure_blob_storage" {
 variable "linked_service_databricks" {
   type = map(object({
     adb_domain                 = string
-    data_factory_id            = string
+    data_factory_id            = optional(string)
     name                       = string
     additional_properties      = optional(map(string), null)
     annotations                = optional(list(string), null)
@@ -370,7 +370,7 @@ variable "linked_service_databricks" {
 variable "linked_service_azure_file_storage" {
   type = map(object({
     name                     = string
-    data_factory_id          = string
+    data_factory_id          = optional(string)
     description              = optional(string, null)
     host                     = optional(string, null)
     integration_runtime_name = optional(string, null)
@@ -415,7 +415,7 @@ variable "linked_service_azure_file_storage" {
 variable "linked_service_azure_sql_database" {
   type = map(object({
     name                     = string
-    data_factory_id          = string
+    data_factory_id          = optional(string)
     connection_string        = optional(string, null)
     use_managed_identity     = optional(bool, null)
     service_principal_id     = optional(string, null)
@@ -469,7 +469,7 @@ variable "linked_service_azure_sql_database" {
 variable "linked_service_data_lake_storage_gen2" {
   type = map(object({
     name                     = string
-    data_factory_id          = string
+    data_factory_id          = optional(string)
     description              = optional(string, null)
     integration_runtime_name = optional(string, null)
     annotations              = optional(list(string), null)
@@ -509,7 +509,7 @@ variable "linked_service_data_lake_storage_gen2" {
 variable "linked_service_key_vault" {
   type = map(object({
     name                     = string
-    data_factory_id          = string
+    data_factory_id          = optional(string)
     key_vault_id             = string
     description              = optional(string, null)
     integration_runtime_name = optional(string, null)
