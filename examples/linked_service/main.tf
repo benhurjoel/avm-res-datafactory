@@ -35,14 +35,7 @@ resource "azurerm_storage_share" "fileshare" {
   quota                = 5
 }
 
-# Create Azure Data Factory with dynamically generated name
-resource "azurerm_data_factory" "this" {
-  name                = module.naming.data_factory.name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-}
-
-module "linked_service" {
+module "df_with_linked_service" {
   source = "../../" # Adjust this path based on your module's location
 
   # Required variables (adjust values accordingly)
