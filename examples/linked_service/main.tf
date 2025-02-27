@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.9, < 2.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.87"
+    }
+  }
+}
+
 provider "azurerm" {
   features {
     resource_group {
@@ -8,31 +18,32 @@ provider "azurerm" {
 
 # Single Naming Module for all resources
 module "naming" {
-  source = "Azure/naming/azurerm"
-  prefix = ["test"]
-  suffix = ["03"]
+  source  = "Azure/naming/azurerm"
+  version = "0.3.0"
+  prefix  = ["test"]
+  suffix  = ["03"]
 }
 
 # Create Resource Group with dynamically generated name
 resource "azurerm_resource_group" "rg" {
-  name     = module.naming.resource_group.name
   location = "southeastasia"
+  name     = module.naming.resource_group.name
 }
 
 # Create a Storage Account with dynamically generated name
 resource "azurerm_storage_account" "storage" {
+  account_replication_type = "ZRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.rg.location
   name                     = module.naming.storage_account.name
   resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
 }
 
 # Create an Azure File Share with dynamically generated name
 resource "azurerm_storage_share" "fileshare" {
   name                 = module.naming.storage_share.name
-  storage_account_name = azurerm_storage_account.storage.name
   quota                = 5
+  storage_account_name = azurerm_storage_account.storage.name
 }
 
 module "df_with_linked_service" {

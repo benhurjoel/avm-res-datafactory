@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.9, < 2.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.87"
+    }
+  }
+}
+
 provider "azurerm" {
   features {
     resource_group {
@@ -8,32 +18,33 @@ provider "azurerm" {
 
 # Naming Module for Consistent Resource Names
 module "naming" {
-  source = "Azure/naming/azurerm"
-  prefix = ["test"]
-  suffix = ["01"]
+  source  = "Azure/naming/azurerm"
+  version = "0.3.0"
+  prefix  = ["test"]
+  suffix  = ["01"]
 }
 
 # Create Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = module.naming.resource_group.name
   location = "southeastasia"
+  name     = module.naming.resource_group.name
 }
 
 # Create Resource Group
 resource "azurerm_resource_group" "host" {
-  name     = module.naming.resource_group.name
   location = "southeastasia"
+  name     = module.naming.resource_group.name
 }
 
 resource "azurerm_data_factory" "host" {
-  name                = module.naming.data_factory.name
   location            = azurerm_resource_group.host.location
+  name                = module.naming.data_factory.name
   resource_group_name = azurerm_resource_group.host.name
 }
 
 resource "azurerm_data_factory_integration_runtime_self_hosted" "host" {
-  name            = module.naming.data_factory_integration_runtime_managed.name
   data_factory_id = azurerm_data_factory.host.id
+  name            = module.naming.data_factory_integration_runtime_managed.name
 }
 
 

@@ -5,38 +5,28 @@ This deploys the Azure Cache for Redis module in its simplest form.
 
 ```hcl
 terraform {
-  required_version = "~> 1.7"
+  required_version = ">= 1.9, < 2.0"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = ">= 3.87"
     }
     random = {
       source  = "hashicorp/random"
-      version = ">= 3.5.0, < 4.0.0"
+      version = "~> 3.5"
     }
   }
 }
 
 provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
+  features {}
 }
 
-locals {
-  tags = {
-    scenario = "default"
-  }
-}
 
-## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
-  source  = "Azure/regions/azurerm"
-  version = "~> 0.6"
+  source  = "Azure/avm-utl-regions/azurerm"
+  version = "0.1.0"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -44,12 +34,11 @@ resource "random_integer" "region_index" {
   max = length(module.regions.regions) - 1
   min = 0
 }
-## End of section to provide a random Azure region for the resource group
 
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.4"
+  version = "0.3.0"
 }
 
 # This is required for resource modules
@@ -58,89 +47,25 @@ resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
 }
 
-# create a virtual network
-resource "azurerm_virtual_network" "this" {
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.this.location
-  name                = "endppoint-vnet"
-  resource_group_name = azurerm_resource_group.this.name
-}
-
-# create a subnet for the private endpoint
-resource "azurerm_subnet" "endpoint" {
-  address_prefixes     = ["10.0.2.0/24"]
-  name                 = "endpoint"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-}
-
-resource "azurerm_private_dns_zone" "this" {
-  name                = "privatelink.redis.cache.windows.net"
-  resource_group_name = azurerm_resource_group.this.name
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "this" {
-  name                  = "vnet-link"
-  private_dns_zone_name = azurerm_private_dns_zone.this.name
-  resource_group_name   = azurerm_resource_group.this.name
-  virtual_network_id    = azurerm_virtual_network.this.id
-}
-
-resource "azurerm_log_analytics_workspace" "this_workspace" {
+resource "azurerm_log_analytics_workspace" "this" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.log_analytics_workspace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  retention_in_days   = 30
-  sku                 = "PerGB2018"
-  tags                = local.tags
 }
 
 # This is the module call
-module "default" {
+module "datafactory" {
   source = "../../"
-  # source             = "Azure/avm-res-cache-redis/azurerm"
-  # version            = "0.2.0"
-
-  enable_telemetry              = var.enable_telemetry
-  name                          = module.naming.redis_cache.name_unique
-  resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
-  public_network_access_enabled = false
-  private_endpoints = {
-    endpoint1 = {
-      subnet_resource_id            = azurerm_subnet.endpoint.id
-      private_dns_zone_group_name   = "private-dns-zone-group"
-      private_dns_zone_resource_ids = [azurerm_private_dns_zone.this.id]
-    }
-  }
-
+  # source             = "Azure/avm-res-keyvault-vault/azurerm"
+  name                = module.naming.data_factory.name_unique
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
   diagnostic_settings = {
-    diag_setting_1 = {
-      name                           = "diagSetting1"
-      log_groups                     = ["allLogs"]
-      metric_categories              = ["AllMetrics"]
-      log_analytics_destination_type = null
-      workspace_resource_id          = azurerm_log_analytics_workspace.this_workspace.id
+    to_la = {
+      name                  = "to-la"
+      workspace_resource_id = azurerm_log_analytics_workspace.this.id
     }
   }
-
-  redis_configuration = {
-    maxmemory_reserved = 1330
-    maxmemory_delta    = 1330
-    maxmemory_policy   = "allkeys-lru"
-  }
-  /*
-  lock = {
-    kind = "CanNotDelete"
-    name = "Delete"
-  }
-  */
-
-  managed_identities = {
-    system_assigned = true
-  }
-
-  tags = local.tags
 }
 ```
 
@@ -149,22 +74,18 @@ module "default" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.87)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0, < 4.0.0)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_log_analytics_workspace.this_workspace](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
-- [azurerm_private_dns_zone.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone) (resource)
-- [azurerm_private_dns_zone_virtual_network_link.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone_virtual_network_link) (resource)
+- [azurerm_log_analytics_workspace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_subnet.endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) (resource)
-- [azurerm_virtual_network.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) (resource)
 - [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 
 <!-- markdownlint-disable MD013 -->
@@ -174,17 +95,7 @@ No required inputs.
 
 ## Optional Inputs
 
-The following input variables are optional (have default values):
-
-### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
-
-Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
-If it is set to false, then no telemetry will be collected.
-
-Type: `bool`
-
-Default: `true`
+No optional inputs.
 
 ## Outputs
 
@@ -194,7 +105,7 @@ No outputs.
 
 The following Modules are called:
 
-### <a name="module_default"></a> [default](#module\_default)
+### <a name="module_datafactory"></a> [datafactory](#module\_datafactory)
 
 Source: ../../
 
@@ -204,13 +115,13 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.4
+Version: 0.3.0
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
-Source: Azure/regions/azurerm
+Source: Azure/avm-utl-regions/azurerm
 
-Version: ~> 0.6
+Version: 0.1.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

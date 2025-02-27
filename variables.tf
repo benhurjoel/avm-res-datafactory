@@ -20,123 +20,6 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
-variable "managed_virtual_network_enabled" {
-  description = "Is Managed Virtual Network enabled?"
-  type        = bool
-  default     = false
-}
-
-variable "public_network_enabled" {
-  description = "Is the Data Factory visible to the public network?"
-  type        = bool
-  default     = true
-}
-
-variable "customer_managed_key_id" {
-  description = "Specifies the Azure Key Vault Key ID to be used as the Customer Managed Key (CMK). Required with user assigned identity."
-  type        = string
-  default     = null
-}
-
-variable "customer_managed_key_identity_id" {
-  description = "Specifies the ID of the user assigned identity associated with the Customer Managed Key. Must be supplied if customer_managed_key_id is set."
-  type        = string
-  default     = null
-}
-
-variable "purview_id" {
-  description = "Specifies the ID of the purview account resource associated with the Data Factory."
-  type        = string
-  default     = null
-}
-
-variable "identity" {
-  type = object({
-    type         = string
-    identity_ids = optional(list(string), [])
-  })
-  default     = null
-  description = <<DESCRIPTION
-    Defines the Managed Service Identity for the Data Factory.
-    - type: Specifies the type of Managed Service Identity. Possible values: SystemAssigned, UserAssigned, or both.
-    - identity_ids: A list of User Assigned Managed Identity IDs. Required if type includes UserAssigned.
-    DESCRIPTION
-}
-
-
-variable "github_configuration" {
-  type = object({
-    account_name       = string
-    branch_name        = string
-    git_url            = optional(string, null)
-    repository_name    = string
-    root_folder        = string
-    publishing_enabled = optional(bool, true)
-  })
-  default = null
-
-  description = <<DESCRIPTION
-  Defines the GitHub configuration for the Data Factory.
-  - account_name: Specifies the GitHub account name.
-  - branch_name: Specifies the branch of the repository to get code from.
-  - git_url: Specifies the GitHub Enterprise host name. Defaults to https://github.com for open source repositories.
-  - repository_name: Specifies the name of the git repository.
-  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
-  - publishing_enabled: Is automated publishing enabled? Defaults to true.
-  **You must log in to the Data Factory management UI to complete the authentication to the GitHub repository.**
-  DESCRIPTION
-}
-
-
-variable "vsts_configuration" {
-  type = object({
-    account_name       = string
-    branch_name        = string
-    project_name       = string
-    repository_name    = string
-    root_folder        = string
-    tenant_id          = string
-    publishing_enabled = optional(bool, true)
-  })
-  default = null
-
-  description = <<DESCRIPTION
-  Defines the VSTS configuration for the Data Factory.
-  - account_name: Specifies the VSTS account name.
-  - branch_name: Specifies the branch of the repository to get code from.
-  - project_name: Specifies the name of the VSTS project.
-  - repository_name: Specifies the name of the git repository.
-  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
-  - tenant_id: Specifies the Tenant ID associated with the VSTS account.
-  - publishing_enabled: Is automated publishing enabled? Defaults to true.
-  DESCRIPTION
-}
-
-
-variable "global_parameters" {
-  type = list(object({
-    name  = string
-    type  = string
-    value = any
-  }))
-  default = []
-
-  description = <<DESCRIPTION
-  Defines a list of global parameters for the Data Factory.
-  - name: Specifies the global parameter name.
-  - type: Specifies the global parameter type. Possible values: Array, Bool, Float, Int, Object, or String.
-  - value: Specifies the global parameter value.
-  **For type Array and Object, it is recommended to use jsonencode() for the value.**
-  DESCRIPTION
-}
-
-
-variable "tags" {
-  description = "A mapping of tags to assign to the resource."
-  type        = map(string)
-  default     = {}
-}
-
 variable "credential_service_principal" {
   type = map(object({
     name                 = string
@@ -152,8 +35,7 @@ variable "credential_service_principal" {
       secret_version      = optional(string, null)
     }), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Credentials, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -179,8 +61,7 @@ variable "credential_user_managed_identity" {
     annotations     = optional(list(string), null)
     description     = optional(string, null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Credentials using User Assigned Managed Identity, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -193,6 +74,124 @@ variable "credential_user_managed_identity" {
   DESCRIPTION
 }
 
+variable "customer_managed_key_id" {
+  type        = string
+  default     = null
+  description = "Specifies the Azure Key Vault Key ID to be used as the Customer Managed Key (CMK). Required with user assigned identity."
+}
+
+variable "customer_managed_key_identity_id" {
+  type        = string
+  default     = null
+  description = "Specifies the ID of the user assigned identity associated with the Customer Managed Key. Must be supplied if customer_managed_key_id is set."
+}
+
+variable "diagnostic_settings" {
+  type = map(object({
+    name                                     = optional(string, null)
+    log_categories                           = optional(set(string), [])
+    log_groups                               = optional(set(string), ["allLogs"])
+    metric_categories                        = optional(set(string), ["AllMetrics"])
+    log_analytics_destination_type           = optional(string, "Dedicated")
+    workspace_resource_id                    = optional(string, null)
+    storage_account_resource_id              = optional(string, null)
+    event_hub_authorization_rule_resource_id = optional(string, null)
+    event_hub_name                           = optional(string, null)
+    marketplace_partner_resource_id          = optional(string, null)
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+A map of diagnostic settings to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+
+- `name` - (Optional) The name of the diagnostic setting. One will be generated if not set, however this will not be unique if you want to create multiple diagnostic setting resources.
+- `log_categories` - (Optional) A set of log categories to send to the log analytics workspace. Defaults to `[]`.
+- `log_groups` - (Optional) A set of log groups to send to the log analytics workspace. Defaults to `["allLogs"]`.
+- `metric_categories` - (Optional) A set of metric categories to send to the log analytics workspace. Defaults to `["AllMetrics"]`.
+- `log_analytics_destination_type` - (Optional) The destination type for the diagnostic setting. Possible values are `Dedicated` and `AzureDiagnostics`. Defaults to `Dedicated`.
+- `workspace_resource_id` - (Optional) The resource ID of the log analytics workspace to send logs and metrics to.
+- `storage_account_resource_id` - (Optional) The resource ID of the storage account to send logs and metrics to.
+- `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
+- `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
+- `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
+DESCRIPTION
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for _, v in var.diagnostic_settings : contains(["Dedicated", "AzureDiagnostics"], v.log_analytics_destination_type)])
+    error_message = "Log analytics destination type must be one of: 'Dedicated', 'AzureDiagnostics'."
+  }
+  validation {
+    condition = alltrue(
+      [
+        for _, v in var.diagnostic_settings :
+        v.workspace_resource_id != null || v.storage_account_resource_id != null || v.event_hub_authorization_rule_resource_id != null || v.marketplace_partner_resource_id != null
+      ]
+    )
+    error_message = "At least one of `workspace_resource_id`, `storage_account_resource_id`, `marketplace_partner_resource_id`, or `event_hub_authorization_rule_resource_id`, must be set."
+  }
+}
+
+variable "enable_telemetry" {
+  type        = bool
+  default     = true
+  description = <<DESCRIPTION
+    This variable controls whether or not telemetry is enabled for the module.
+    For more information see <https://aka.ms/avm/telemetryinfo>.
+    If it is set to false, then no telemetry will be collected.
+    DESCRIPTION
+}
+
+variable "github_configuration" {
+  type = object({
+    account_name       = string
+    branch_name        = string
+    git_url            = optional(string, null)
+    repository_name    = string
+    root_folder        = string
+    publishing_enabled = optional(bool, true)
+  })
+  default     = null
+  description = <<DESCRIPTION
+  Defines the GitHub configuration for the Data Factory.
+  - account_name: Specifies the GitHub account name.
+  - branch_name: Specifies the branch of the repository to get code from.
+  - git_url: Specifies the GitHub Enterprise host name. Defaults to https://github.com for open source repositories.
+  - repository_name: Specifies the name of the git repository.
+  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
+  - publishing_enabled: Is automated publishing enabled? Defaults to true.
+  **You must log in to the Data Factory management UI to complete the authentication to the GitHub repository.**
+  DESCRIPTION
+}
+
+variable "global_parameters" {
+  type = list(object({
+    name  = string
+    type  = string
+    value = any
+  }))
+  default     = []
+  description = <<DESCRIPTION
+  Defines a list of global parameters for the Data Factory.
+  - name: Specifies the global parameter name.
+  - type: Specifies the global parameter type. Possible values: Array, Bool, Float, Int, Object, or String.
+  - value: Specifies the global parameter value.
+  **For type Array and Object, it is recommended to use jsonencode() for the value.**
+  DESCRIPTION
+}
+
+variable "identity" {
+  type = object({
+    type         = string
+    identity_ids = optional(list(string), [])
+  })
+  default     = null
+  description = <<DESCRIPTION
+    Defines the Managed Service Identity for the Data Factory.
+    - type: Specifies the type of Managed Service Identity. Possible values: SystemAssigned, UserAssigned, or both.
+    - identity_ids: A list of User Assigned Managed Identity IDs. Required if type includes UserAssigned.
+    DESCRIPTION
+}
+
 variable "integration_runtime_self_hosted" {
   type = map(object({
     data_factory_id                              = optional(string)
@@ -203,8 +202,7 @@ variable "integration_runtime_self_hosted" {
       resource_id = string
     }), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Self-hosted Integration Runtimes, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -249,8 +247,7 @@ variable "linked_service_azure_blob_storage" {
       secret_name         = string
     }), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Blob Storage linked services, where each key represents a unique linked service configuration.
     Each object in the map consists of the following properties:
@@ -288,85 +285,6 @@ variable "linked_service_azure_blob_storage" {
     DESCRIPTION
 }
 
-variable "linked_service_databricks" {
-  type = map(object({
-    adb_domain                 = string
-    data_factory_id            = optional(string)
-    name                       = string
-    additional_properties      = optional(map(string), null)
-    annotations                = optional(list(string), null)
-    description                = optional(string, null)
-    integration_runtime_name   = optional(string, null)
-    parameters                 = optional(map(string), null)
-    access_token               = optional(string, null)
-    msi_work_space_resource_id = optional(string, null)
-    key_vault_password = optional(object({
-      linked_service_name = string
-      secret_name         = string
-    }), null)
-    existing_cluster_id = optional(string, null)
-    instance_pool = optional(object({
-      instance_pool_id      = string
-      cluster_version       = string
-      min_number_of_workers = optional(number, 1)
-      max_number_of_workers = optional(number, null)
-    }), null)
-    new_cluster_config = optional(object({
-      cluster_version             = string
-      node_type                   = string
-      driver_node_type            = optional(string, null)
-      max_number_of_workers       = optional(number, null)
-      min_number_of_workers       = optional(number, 1)
-      spark_config                = optional(map(string), null)
-      spark_environment_variables = optional(map(string), null)
-      custom_tags                 = optional(map(string), null)
-      init_scripts                = optional(list(string), null)
-      log_destination             = optional(string, null)
-    }), null)
-  }))
-  default = {}
-
-  description = <<DESCRIPTION
-    A map of Azure Data Factory Linked Services for Databricks, where each key represents a unique configuration.
-    Each object in the map consists of the following properties:
-
-    - `adb_domain` - (Required) The domain URL of the Databricks instance.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `name` - (Required) The unique name of the linked service.
-    - `additional_properties` - (Optional) Additional custom properties.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `description` - (Optional) A description of the linked service.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `parameters` - (Optional) A map of parameters.
-
-    ### Authentication Options (Only one can be set):
-    - `access_token` - (Optional) Authenticate to Databricks via an access token.
-    - `key_vault_password` - (Optional) Authenticate via Azure Key Vault. 
-      - `linked_service_name` - (Required) Name of the Key Vault Linked Service.
-      - `secret_name` - (Required) The secret storing the access token.
-    - `msi_work_space_resource_id` - (Optional) Authenticate via managed service identity.
-
-    ### Cluster Integration Options (Only one can be set):
-    - `existing_cluster_id` - (Optional) The ID of an existing cluster.
-    - `instance_pool` - (Optional) Use an instance pool. This requires a nested `instance_pool` block.
-      - `instance_pool_id` - (Required) The identifier of the instance pool.
-      - `cluster_version` - (Required) The Spark version.
-      - `min_number_of_workers` - (Optional) Minimum worker nodes (default: 1).
-      - `max_number_of_workers` - (Optional) Maximum worker nodes.
-    - `new_cluster_config` - (Optional) Create a new cluster.
-      - `cluster_version` - (Required) Spark version.
-      - `node_type` - (Required) Node type.
-      - `driver_node_type` - (Optional) Driver node type.
-      - `max_number_of_workers` - (Optional) Max workers.
-      - `min_number_of_workers` - (Optional) Min workers (default: 1).
-      - `spark_config` - (Optional) Key-value pairs for Spark configuration.
-      - `spark_environment_variables` - (Optional) Spark environment variables.
-      - `custom_tags` - (Optional) Tags for the cluster.
-      - `init_scripts` - (Optional) Initialization scripts.
-      - `log_destination` - (Optional) Log storage location.
-    DESCRIPTION
-}
-
 variable "linked_service_azure_file_storage" {
   type = map(object({
     name                     = string
@@ -386,8 +304,7 @@ variable "linked_service_azure_file_storage" {
       secret_name         = string
     }), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Linked Services for Azure File Storage, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -438,8 +355,7 @@ variable "linked_service_azure_sql_database" {
       secret_name         = string
     }), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Linked Services for Azure SQL Database, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -482,8 +398,7 @@ variable "linked_service_data_lake_storage_gen2" {
     service_principal_key    = optional(string, null)
     tenant                   = optional(string, null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Linked Services for Data Lake Storage Gen2, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -506,6 +421,84 @@ variable "linked_service_data_lake_storage_gen2" {
   DESCRIPTION
 }
 
+variable "linked_service_databricks" {
+  type = map(object({
+    adb_domain                 = string
+    data_factory_id            = optional(string)
+    name                       = string
+    additional_properties      = optional(map(string), null)
+    annotations                = optional(list(string), null)
+    description                = optional(string, null)
+    integration_runtime_name   = optional(string, null)
+    parameters                 = optional(map(string), null)
+    access_token               = optional(string, null)
+    msi_work_space_resource_id = optional(string, null)
+    key_vault_password = optional(object({
+      linked_service_name = string
+      secret_name         = string
+    }), null)
+    existing_cluster_id = optional(string, null)
+    instance_pool = optional(object({
+      instance_pool_id      = string
+      cluster_version       = string
+      min_number_of_workers = optional(number, 1)
+      max_number_of_workers = optional(number, null)
+    }), null)
+    new_cluster_config = optional(object({
+      cluster_version             = string
+      node_type                   = string
+      driver_node_type            = optional(string, null)
+      max_number_of_workers       = optional(number, null)
+      min_number_of_workers       = optional(number, 1)
+      spark_config                = optional(map(string), null)
+      spark_environment_variables = optional(map(string), null)
+      custom_tags                 = optional(map(string), null)
+      init_scripts                = optional(list(string), null)
+      log_destination             = optional(string, null)
+    }), null)
+  }))
+  default     = {}
+  description = <<DESCRIPTION
+    A map of Azure Data Factory Linked Services for Databricks, where each key represents a unique configuration.
+    Each object in the map consists of the following properties:
+
+    - `adb_domain` - (Required) The domain URL of the Databricks instance.
+    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+    - `name` - (Required) The unique name of the linked service.
+    - `additional_properties` - (Optional) Additional custom properties.
+    - `annotations` - (Optional) A list of tags to annotate the linked service.
+    - `description` - (Optional) A description of the linked service.
+    - `integration_runtime_name` - (Optional) The integration runtime reference.
+    - `parameters` - (Optional) A map of parameters.
+
+    ### Authentication Options (Only one can be set):
+    - `access_token` - (Optional) Authenticate to Databricks via an access token.
+    - `key_vault_password` - (Optional) Authenticate via Azure Key Vault. 
+      - `linked_service_name` - (Required) Name of the Key Vault Linked Service.
+      - `secret_name` - (Required) The secret storing the access token.
+    - `msi_work_space_resource_id` - (Optional) Authenticate via managed service identity.
+
+    ### Cluster Integration Options (Only one can be set):
+    - `existing_cluster_id` - (Optional) The ID of an existing cluster.
+    - `instance_pool` - (Optional) Use an instance pool. This requires a nested `instance_pool` block.
+      - `instance_pool_id` - (Required) The identifier of the instance pool.
+      - `cluster_version` - (Required) The Spark version.
+      - `min_number_of_workers` - (Optional) Minimum worker nodes (default: 1).
+      - `max_number_of_workers` - (Optional) Maximum worker nodes.
+    - `new_cluster_config` - (Optional) Create a new cluster.
+      - `cluster_version` - (Required) Spark version.
+      - `node_type` - (Required) Node type.
+      - `driver_node_type` - (Optional) Driver node type.
+      - `max_number_of_workers` - (Optional) Max workers.
+      - `min_number_of_workers` - (Optional) Min workers (default: 1).
+      - `spark_config` - (Optional) Key-value pairs for Spark configuration.
+      - `spark_environment_variables` - (Optional) Spark environment variables.
+      - `custom_tags` - (Optional) Tags for the cluster.
+      - `init_scripts` - (Optional) Initialization scripts.
+      - `log_destination` - (Optional) Log storage location.
+    DESCRIPTION
+}
+
 variable "linked_service_key_vault" {
   type = map(object({
     name                     = string
@@ -517,8 +510,7 @@ variable "linked_service_key_vault" {
     parameters               = optional(map(string), null)
     additional_properties    = optional(map(string), null)
   }))
-  default = {}
-
+  default     = {}
   description = <<DESCRIPTION
     A map of Azure Data Factory Linked Services for Azure Key Vault, where each key represents a unique configuration.
     Each object in the map consists of the following properties:
@@ -532,6 +524,39 @@ variable "linked_service_key_vault" {
     - `parameters` - (Optional) A map of parameters.
     - `additional_properties` - (Optional) Additional custom properties.
   DESCRIPTION
+}
+
+variable "lock" {
+  type = object({
+    kind = string
+    name = optional(string, null)
+  })
+  default     = null
+  description = <<DESCRIPTION
+    Controls the Resource Lock configuration for this resource. The following properties can be specified:
+
+    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+
+    Example Input:
+    ```hcl
+    lock = {
+      kind = "CanNotDelete"
+      name = "Delete"
+    }
+    ```
+    DESCRIPTION
+
+  validation {
+    condition     = var.lock != null ? contains(["CanNotDelete", "ReadOnly"], var.lock.kind) : true
+    error_message = "Lock kind must be either `\"CanNotDelete\"` or `\"ReadOnly\"`."
+  }
+}
+
+variable "managed_virtual_network_enabled" {
+  type        = bool
+  default     = false
+  description = "Is Managed Virtual Network enabled?"
 }
 
 variable "private_endpoints" {
@@ -607,84 +632,43 @@ variable "private_endpoints_manage_dns_zone_group" {
   nullable    = false
 }
 
-variable "enable_telemetry" {
+variable "public_network_enabled" {
   type        = bool
   default     = true
-  description = <<DESCRIPTION
-    This variable controls whether or not telemetry is enabled for the module.
-    For more information see <https://aka.ms/avm/telemetryinfo>.
-    If it is set to false, then no telemetry will be collected.
-    DESCRIPTION
+  description = "Is the Data Factory visible to the public network?"
 }
 
-variable "lock" {
+variable "purview_id" {
+  type        = string
+  default     = null
+  description = "Specifies the ID of the purview account resource associated with the Data Factory."
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = null
+  description = "A mapping of tags to assign to the resource."
+}
+
+variable "vsts_configuration" {
   type = object({
-    kind = string
-    name = optional(string, null)
+    account_name       = string
+    branch_name        = string
+    project_name       = string
+    repository_name    = string
+    root_folder        = string
+    tenant_id          = string
+    publishing_enabled = optional(bool, true)
   })
   default     = null
   description = <<DESCRIPTION
-    Controls the Resource Lock configuration for this resource. The following properties can be specified:
-
-    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
-    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
-
-    Example Input:
-    ```hcl
-    lock = {
-      kind = "CanNotDelete"
-      name = "Delete"
-    }
-    ```
-    DESCRIPTION
-
-  validation {
-    condition     = var.lock != null ? contains(["CanNotDelete", "ReadOnly"], var.lock.kind) : true
-    error_message = "Lock kind must be either `\"CanNotDelete\"` or `\"ReadOnly\"`."
-  }
-}
-
-variable "diagnostic_settings" {
-  type = map(object({
-    name                                     = optional(string, null)
-    log_categories                           = optional(set(string), [])
-    log_groups                               = optional(set(string), ["allLogs"])
-    metric_categories                        = optional(set(string), ["AllMetrics"])
-    log_analytics_destination_type           = optional(string, "Dedicated")
-    workspace_resource_id                    = optional(string, null)
-    storage_account_resource_id              = optional(string, null)
-    event_hub_authorization_rule_resource_id = optional(string, null)
-    event_hub_name                           = optional(string, null)
-    marketplace_partner_resource_id          = optional(string, null)
-  }))
-  default     = {}
-  description = <<DESCRIPTION
-A map of diagnostic settings to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the diagnostic setting. One will be generated if not set, however this will not be unique if you want to create multiple diagnostic setting resources.
-- `log_categories` - (Optional) A set of log categories to send to the log analytics workspace. Defaults to `[]`.
-- `log_groups` - (Optional) A set of log groups to send to the log analytics workspace. Defaults to `["allLogs"]`.
-- `metric_categories` - (Optional) A set of metric categories to send to the log analytics workspace. Defaults to `["AllMetrics"]`.
-- `log_analytics_destination_type` - (Optional) The destination type for the diagnostic setting. Possible values are `Dedicated` and `AzureDiagnostics`. Defaults to `Dedicated`.
-- `workspace_resource_id` - (Optional) The resource ID of the log analytics workspace to send logs and metrics to.
-- `storage_account_resource_id` - (Optional) The resource ID of the storage account to send logs and metrics to.
-- `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
-- `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
-- `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
-DESCRIPTION
-  nullable    = false
-
-  validation {
-    condition     = alltrue([for _, v in var.diagnostic_settings : contains(["Dedicated", "AzureDiagnostics"], v.log_analytics_destination_type)])
-    error_message = "Log analytics destination type must be one of: 'Dedicated', 'AzureDiagnostics'."
-  }
-  validation {
-    condition = alltrue(
-      [
-        for _, v in var.diagnostic_settings :
-        v.workspace_resource_id != null || v.storage_account_resource_id != null || v.event_hub_authorization_rule_resource_id != null || v.marketplace_partner_resource_id != null
-      ]
-    )
-    error_message = "At least one of `workspace_resource_id`, `storage_account_resource_id`, `marketplace_partner_resource_id`, or `event_hub_authorization_rule_resource_id`, must be set."
-  }
+  Defines the VSTS configuration for the Data Factory.
+  - account_name: Specifies the VSTS account name.
+  - branch_name: Specifies the branch of the repository to get code from.
+  - project_name: Specifies the name of the VSTS project.
+  - repository_name: Specifies the name of the git repository.
+  - root_folder: Specifies the root folder within the repository. Set to / for the top level.
+  - tenant_id: Specifies the Tenant ID associated with the VSTS account.
+  - publishing_enabled: Is automated publishing enabled? Defaults to true.
+  DESCRIPTION
 }

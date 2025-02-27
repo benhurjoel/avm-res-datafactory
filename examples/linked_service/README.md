@@ -5,15 +5,11 @@ This deploys the Azure Cache for Redis module with a basic sku to demonstrate ho
 
 ```hcl
 terraform {
-  required_version = "~> 1.7"
+  required_version = ">= 1.9, < 2.0"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = ">= 3.5.0, < 4.0.0"
+      version = ">= 3.87"
     }
   }
 }
@@ -26,54 +22,52 @@ provider "azurerm" {
   }
 }
 
-locals {
-  tags = {
-    scenario = "default"
-  }
-}
-
-## Section to provide a random Azure region for the resource group
-# This allows us to randomize the region for the resource group.
-module "regions" {
-  source  = "Azure/regions/azurerm"
-  version = "~> 0.6"
-}
-
-# This allows us to randomize the region for the resource group.
-resource "random_integer" "region_index" {
-  max = length(module.regions.regions) - 1
-  min = 0
-}
-## End of section to provide a random Azure region for the resource group
-
-# This ensures we have unique CAF compliant names for our resources.
+# Single Naming Module for all resources
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.4"
+  version = "0.3.0"
+  prefix  = ["test"]
+  suffix  = ["03"]
 }
 
-# This is required for resource modules
-resource "azurerm_resource_group" "this" {
-  location = module.regions.regions[random_integer.region_index.result].name
-  name     = module.naming.resource_group.name_unique
+# Create Resource Group with dynamically generated name
+resource "azurerm_resource_group" "rg" {
+  location = "southeastasia"
+  name     = module.naming.resource_group.name
 }
 
-
-# This is the module call
-module "basic" {
-  source = "../../"
-  # source             = "Azure/avm-res-cache-redis/azurerm"
-  # version            = "0.2.0"
-
-  enable_telemetry    = var.enable_telemetry
-  name                = module.naming.redis_cache.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  sku_name            = "Basic"
-  zones               = null
-
-  tags = local.tags
+# Create a Storage Account with dynamically generated name
+resource "azurerm_storage_account" "storage" {
+  account_replication_type = "ZRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.rg.location
+  name                     = module.naming.storage_account.name
+  resource_group_name      = azurerm_resource_group.rg.name
 }
+
+# Create an Azure File Share with dynamically generated name
+resource "azurerm_storage_share" "fileshare" {
+  name                 = module.naming.storage_share.name
+  quota                = 5
+  storage_account_name = azurerm_storage_account.storage.name
+}
+
+module "df_with_linked_service" {
+  source = "../../" # Adjust this path based on your module's location
+
+  # Required variables (adjust values accordingly)
+  name                = module.naming.data_factory.name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  linked_service_azure_file_storage = {
+    example = {
+      name              = module.naming.data_factory_linked_service_data_lake_storage_gen2.name
+      connection_string = azurerm_storage_account.storage.primary_connection_string
+    }
+  }
+
+}
+
 ```
 
 <!-- markdownlint-disable MD033 -->
@@ -81,18 +75,17 @@ module "basic" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.7)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0, < 4.0.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.87)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
+- [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
+- [azurerm_storage_account.storage](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
+- [azurerm_storage_share.fileshare](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -101,17 +94,7 @@ No required inputs.
 
 ## Optional Inputs
 
-The following input variables are optional (have default values):
-
-### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
-
-Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
-If it is set to false, then no telemetry will be collected.
-
-Type: `bool`
-
-Default: `true`
+No optional inputs.
 
 ## Outputs
 
@@ -121,7 +104,7 @@ No outputs.
 
 The following Modules are called:
 
-### <a name="module_basic"></a> [basic](#module\_basic)
+### <a name="module_df_with_linked_service"></a> [df\_with\_linked\_service](#module\_df\_with\_linked\_service)
 
 Source: ../../
 
@@ -131,13 +114,7 @@ Version:
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.4
-
-### <a name="module_regions"></a> [regions](#module\_regions)
-
-Source: Azure/regions/azurerm
-
-Version: ~> 0.6
+Version: 0.3.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

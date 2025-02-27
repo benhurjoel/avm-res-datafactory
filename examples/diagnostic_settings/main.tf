@@ -16,8 +16,6 @@ provider "azurerm" {
   features {}
 }
 
-# We need the tenant id for the key vault.
-data "azurerm_client_config" "this" {}
 
 # This allows us to randomize the region for the resource group.
 module "regions" {
