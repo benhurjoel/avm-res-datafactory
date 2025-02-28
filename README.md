@@ -76,19 +76,19 @@ The following input variables are optional (have default values):
 
 ### <a name="input_credential_service_principal"></a> [credential\_service\_principal](#input\_credential\_service\_principal)
 
-Description:     A map of Azure Data Factory Credentials, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Credentials, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the credential.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
-    - `tenant_id` - (Required) The Tenant ID of the Service Principal.
-    - `service_principal_id` - (Required) The Client ID of the Service Principal.
-    - `annotations` - (Optional) A list of tags to annotate the credential.
-    - `description` - (Optional) A description of the credential.
-    - `service_principal_key` - (Optional) A block defining the service principal key details.
-      - `linked_service_name` - (Required) The name of the Linked Service to use for the Service Principal Key.
-      - `secret_name` - (Required) The name of the Secret in the Key Vault.
-      - `secret_version` - (Optional) The version of the Secret in the Key Vault.
+- `name` - (Required) The unique name of the credential.
+- `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
+- `tenant_id` - (Required) The Tenant ID of the Service Principal.
+- `service_principal_id` - (Required) The Client ID of the Service Principal.
+- `annotations` - (Optional) A list of tags to annotate the credential.
+- `description` - (Optional) A description of the credential.
+- `service_principal_key` - (Optional) A block defining the service principal key details.
+  - `linked_service_name` - (Required) The name of the Linked Service to use for the Service Principal Key.
+  - `secret_name` - (Required) The name of the Secret in the Key Vault.
+  - `secret_version` - (Optional) The version of the Secret in the Key Vault.
 
 Type:
 
@@ -113,14 +113,14 @@ Default: `{}`
 
 ### <a name="input_credential_user_managed_identity"></a> [credential\_user\_managed\_identity](#input\_credential\_user\_managed\_identity)
 
-Description:     A map of Azure Data Factory Credentials using User Assigned Managed Identity, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Credentials using User Assigned Managed Identity, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the credential.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
-    - `identity_id` - (Required) The Resource ID of an existing User Assigned Managed Identity. **Attempting to create a Credential resource without first assigning the identity to the parent Data Factory will result in an Azure API error.**
-    - `annotations` - (Optional) A list of tags to annotate the credential. **Manually altering the resource may cause annotations to be lost.**
-    - `description` - (Optional) A description of the credential.
+- `name` - (Required) The unique name of the credential.
+- `data_factory_id` - (Required) The ID of the Data Factory where the credential is associated.
+- `identity_id` - (Required) The Resource ID of an existing User Assigned Managed Identity. **Attempting to create a Credential resource without first assigning the identity to the parent Data Factory will result in an Azure API error.**
+- `annotations` - (Optional) A list of tags to annotate the credential. **Manually altering the resource may cause annotations to be lost.**
+- `description` - (Optional) A description of the credential.
 
 Type:
 
@@ -188,8 +188,7 @@ Default: `{}`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
-Description:     This variable controls whether or not telemetry is enabled for the module.  
-    For more information see <https://aka.ms/avm/telemetryinfo>.  
+Description:     This variable controls whether or not telemetry is enabled for the module. For more information see <https://aka.ms/avm/telemetryinfo>.  
     If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
@@ -198,14 +197,14 @@ Default: `true`
 
 ### <a name="input_github_configuration"></a> [github\_configuration](#input\_github\_configuration)
 
-Description:   Defines the GitHub configuration for the Data Factory.
-  - account\_name: Specifies the GitHub account name.
-  - branch\_name: Specifies the branch of the repository to get code from.
-  - git\_url: Specifies the GitHub Enterprise host name. Defaults to https://github.com for open source repositories.
-  - repository\_name: Specifies the name of the git repository.
-  - root\_folder: Specifies the root folder within the repository. Set to / for the top level.
-  - publishing\_enabled: Is automated publishing enabled? Defaults to true.
-  **You must log in to the Data Factory management UI to complete the authentication to the GitHub repository.**
+Description: Defines the GitHub configuration for the Data Factory.
+- account\_name: Specifies the GitHub account name.
+- branch\_name: Specifies the branch of the repository to get code from.
+- git\_url: Specifies the GitHub Enterprise host name. Defaults to https://github.com for open source repositories.
+- repository\_name: Specifies the name of the git repository.
+- root\_folder: Specifies the root folder within the repository. Set to / for the top level.
+- publishing\_enabled: Is automated publishing enabled? Defaults to true.
+**You must log in to the Data Factory management UI to complete the authentication to the GitHub repository.**
 
 Type:
 
@@ -224,11 +223,11 @@ Default: `null`
 
 ### <a name="input_global_parameters"></a> [global\_parameters](#input\_global\_parameters)
 
-Description:   Defines a list of global parameters for the Data Factory.
-  - name: Specifies the global parameter name.
-  - type: Specifies the global parameter type. Possible values: Array, Bool, Float, Int, Object, or String.
-  - value: Specifies the global parameter value.
-  **For type Array and Object, it is recommended to use jsonencode() for the value.**
+Description: Defines a list of global parameters for the Data Factory.
+- name: Specifies the global parameter name.
+- type: Specifies the global parameter type. Possible values: Array, Bool, Float, Int, Object, or String.
+- value: Specifies the global parameter value.
+**For type Array and Object, it is recommended to use jsonencode() for the value.**
 
 Type:
 
@@ -244,9 +243,9 @@ Default: `[]`
 
 ### <a name="input_identity"></a> [identity](#input\_identity)
 
-Description:     Defines the Managed Service Identity for the Data Factory.
-    - type: Specifies the type of Managed Service Identity. Possible values: SystemAssigned, UserAssigned, or both.
-    - identity\_ids: A list of User Assigned Managed Identity IDs. Required if type includes UserAssigned.
+Description: Defines the Managed Service Identity for the Data Factory.
+- type: Specifies the type of Managed Service Identity. Possible values: SystemAssigned, UserAssigned, or both.
+- identity\_ids: A list of User Assigned Managed Identity IDs. Required if type includes UserAssigned.
 
 Type:
 
@@ -355,26 +354,26 @@ Default: `{}`
 
 ### <a name="input_linked_service_azure_file_storage"></a> [linked\_service\_azure\_file\_storage](#input\_linked\_service\_azure\_file\_storage)
 
-Description:     A map of Azure Data Factory Linked Services for Azure File Storage, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Linked Services for Azure File Storage, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the linked service.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `description` - (Optional) A description of the linked service.
-    - `host` - (Optional) The Host name of the server.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `parameters` - (Optional) A map of parameters.
-    - `password` - (Optional) The password to log in to the server.
-    - `user_id` - (Optional) The user ID to log in to the server.
-    - `additional_properties` - (Optional) Additional custom properties.
-    - `connection_string` - (Required) The connection string.
-    - `file_share` - (Optional) The name of the file share.
+- `name` - (Required) The unique name of the linked service.
+- `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+- `description` - (Optional) A description of the linked service.
+- `host` - (Optional) The Host name of the server.
+- `integration_runtime_name` - (Optional) The integration runtime reference.
+- `annotations` - (Optional) A list of tags to annotate the linked service.
+- `parameters` - (Optional) A map of parameters.
+- `password` - (Optional) The password to log in to the server.
+- `user_id` - (Optional) The user ID to log in to the server.
+- `additional_properties` - (Optional) Additional custom properties.
+- `connection_string` - (Required) The connection string.
+- `file_share` - (Optional) The name of the file share.
 
-    ### Key Vault Password Block:
-    - `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure File Storage password.
-      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
-      - `secret_name` - (Required) The secret storing the Azure File Storage password.
+### Key Vault Password Block:
+- `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure File Storage password.
+  - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+  - `secret_name` - (Required) The secret storing the Azure File Storage password.
 
 Type:
 
@@ -403,28 +402,28 @@ Default: `{}`
 
 ### <a name="input_linked_service_azure_sql_database"></a> [linked\_service\_azure\_sql\_database](#input\_linked\_service\_azure\_sql\_database)
 
-Description:     A map of Azure Data Factory Linked Services for Azure SQL Database, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Linked Services for Azure SQL Database, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the linked service.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `connection_string` - (Optional) The connection string used to authenticate with Azure SQL Database. **Exactly one of** `connection_string` **or** `key_vault_connection_string` **must be specified.**
-    - `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id` **and** `service_principal_key`.
-    - `service_principal_id` - (Optional) The service principal ID for authentication. **Required if** `service_principal_key` **is set.**
-    - `service_principal_key` - (Optional) The service principal key (password) for authentication. **Required if** `service_principal_id` **is set.**
-    - `tenant_id` - (Optional) The tenant ID for authentication.
-    - `description` - (Optional) A description of the linked service.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `parameters` - (Optional) A map of parameters.
-    - `additional_properties` - (Optional) Additional custom properties.
-    - `credential_name` - (Optional) The name of a User-assigned Managed Identity for authentication.
-    - `key_vault_connection_string` - (Optional) Use an existing Key Vault to store the Azure SQL Database connection string.
-      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
-      - `secret_name` - (Required) The secret storing the SQL Server connection string.
-    - `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure SQL Database password.
-      - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
-      - `secret_name` - (Required) The secret storing the SQL Server password.
+- `name` - (Required) The unique name of the linked service.
+- `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+- `connection_string` - (Optional) The connection string used to authenticate with Azure SQL Database. **Exactly one of** `connection_string` **or** `key_vault_connection_string` **must be specified.**
+- `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id` **and** `service_principal_key`.
+- `service_principal_id` - (Optional) The service principal ID for authentication. **Required if** `service_principal_key` **is set.**
+- `service_principal_key` - (Optional) The service principal key (password) for authentication. **Required if** `service_principal_id` **is set.**
+- `tenant_id` - (Optional) The tenant ID for authentication.
+- `description` - (Optional) A description of the linked service.
+- `integration_runtime_name` - (Optional) The integration runtime reference.
+- `annotations` - (Optional) A list of tags to annotate the linked service.
+- `parameters` - (Optional) A map of parameters.
+- `additional_properties` - (Optional) Additional custom properties.
+- `credential_name` - (Optional) The name of a User-assigned Managed Identity for authentication.
+- `key_vault_connection_string` - (Optional) Use an existing Key Vault to store the Azure SQL Database connection string.
+  - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+  - `secret_name` - (Required) The secret storing the SQL Server connection string.
+- `key_vault_password` - (Optional) Use an existing Key Vault to store the Azure SQL Database password.
+  - `linked_service_name` - (Required) The name of the Key Vault Linked Service.
+  - `secret_name` - (Required) The secret storing the SQL Server password.
 
 Type:
 
@@ -460,24 +459,24 @@ Default: `{}`
 
 ### <a name="input_linked_service_data_lake_storage_gen2"></a> [linked\_service\_data\_lake\_storage\_gen2](#input\_linked\_service\_data\_lake\_storage\_gen2)
 
-Description:     A map of Azure Data Factory Linked Services for Data Lake Storage Gen2, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Linked Services for Data Lake Storage Gen2, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the linked service.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `description` - (Optional) A description of the linked service.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `parameters` - (Optional) A map of parameters.
-    - `additional_properties` - (Optional) Additional custom properties.
-    - `url` - (Required) The endpoint for the Azure Data Lake Storage Gen2 service.
+- `name` - (Required) The unique name of the linked service.
+- `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+- `description` - (Optional) A description of the linked service.
+- `integration_runtime_name` - (Optional) The integration runtime reference.
+- `annotations` - (Optional) A list of tags to annotate the linked service.
+- `parameters` - (Optional) A map of parameters.
+- `additional_properties` - (Optional) Additional custom properties.
+- `url` - (Required) The endpoint for the Azure Data Lake Storage Gen2 service.
 
-    ### Authentication Options (Only one can be set):
-    - `storage_account_key` - (Optional) The Storage Account Key used for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `use_managed_identity`.
-    - `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `storage_account_key`.
-    - `service_principal_id` - (Optional) The service principal ID used for authentication. **Incompatible with** `storage_account_key` and `use_managed_identity`.
-    - `service_principal_key` - (Optional) The service principal key used for authentication. **Required if** `service_principal_id` **is set.**
-    - `tenant` - (Optional) The tenant ID where the service principal exists. **Required if** `service_principal_id` **is set.**
+### Authentication Options (Only one can be set):
+- `storage_account_key` - (Optional) The Storage Account Key used for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `use_managed_identity`.
+- `use_managed_identity` - (Optional) Whether to use the Data Factory's managed identity for authentication. **Incompatible with** `service_principal_id`, `service_principal_key`, `tenant`, and `storage_account_key`.
+- `service_principal_id` - (Optional) The service principal ID used for authentication. **Incompatible with** `storage_account_key` and `use_managed_identity`.
+- `service_principal_key` - (Optional) The service principal key used for authentication. **Required if** `service_principal_id` **is set.**
+- `tenant` - (Optional) The tenant ID where the service principal exists. **Required if** `service_principal_id` **is set.**
 
 Type:
 
@@ -503,43 +502,43 @@ Default: `{}`
 
 ### <a name="input_linked_service_databricks"></a> [linked\_service\_databricks](#input\_linked\_service\_databricks)
 
-Description:     A map of Azure Data Factory Linked Services for Databricks, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Linked Services for Databricks, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `adb_domain` - (Required) The domain URL of the Databricks instance.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `name` - (Required) The unique name of the linked service.
-    - `additional_properties` - (Optional) Additional custom properties.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `description` - (Optional) A description of the linked service.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `parameters` - (Optional) A map of parameters.
+- `adb_domain` - (Required) The domain URL of the Databricks instance.
+- `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+- `name` - (Required) The unique name of the linked service.
+- `additional_properties` - (Optional) Additional custom properties.
+- `annotations` - (Optional) A list of tags to annotate the linked service.
+- `description` - (Optional) A description of the linked service.
+- `integration_runtime_name` - (Optional) The integration runtime reference.
+- `parameters` - (Optional) A map of parameters.
 
-    ### Authentication Options (Only one can be set):
-    - `access_token` - (Optional) Authenticate to Databricks via an access token.
-    - `key_vault_password` - (Optional) Authenticate via Azure Key Vault.
-      - `linked_service_name` - (Required) Name of the Key Vault Linked Service.
-      - `secret_name` - (Required) The secret storing the access token.
-    - `msi_work_space_resource_id` - (Optional) Authenticate via managed service identity.
+### Authentication Options (Only one can be set):
+- `access_token` - (Optional) Authenticate to Databricks via an access token.
+- `key_vault_password` - (Optional) Authenticate via Azure Key Vault.
+  - `linked_service_name` - (Required) Name of the Key Vault Linked Service.
+  - `secret_name` - (Required) The secret storing the access token.
+- `msi_work_space_resource_id` - (Optional) Authenticate via managed service identity.
 
-    ### Cluster Integration Options (Only one can be set):
-    - `existing_cluster_id` - (Optional) The ID of an existing cluster.
-    - `instance_pool` - (Optional) Use an instance pool. This requires a nested `instance_pool` block.
-      - `instance_pool_id` - (Required) The identifier of the instance pool.
-      - `cluster_version` - (Required) The Spark version.
-      - `min_number_of_workers` - (Optional) Minimum worker nodes (default: 1).
-      - `max_number_of_workers` - (Optional) Maximum worker nodes.
-    - `new_cluster_config` - (Optional) Create a new cluster.
-      - `cluster_version` - (Required) Spark version.
-      - `node_type` - (Required) Node type.
-      - `driver_node_type` - (Optional) Driver node type.
-      - `max_number_of_workers` - (Optional) Max workers.
-      - `min_number_of_workers` - (Optional) Min workers (default: 1).
-      - `spark_config` - (Optional) Key-value pairs for Spark configuration.
-      - `spark_environment_variables` - (Optional) Spark environment variables.
-      - `custom_tags` - (Optional) Tags for the cluster.
-      - `init_scripts` - (Optional) Initialization scripts.
-      - `log_destination` - (Optional) Log storage location.
+### Cluster Integration Options (Only one can be set):
+- `existing_cluster_id` - (Optional) The ID of an existing cluster.
+- `instance_pool` - (Optional) Use an instance pool. This requires a nested `instance_pool` block.
+  - `instance_pool_id` - (Required) The identifier of the instance pool.
+  - `cluster_version` - (Required) The Spark version.
+  - `min_number_of_workers` - (Optional) Minimum worker nodes (default: 1).
+  - `max_number_of_workers` - (Optional) Maximum worker nodes.
+- `new_cluster_config` - (Optional) Create a new cluster.
+  - `cluster_version` - (Required) Spark version.
+  - `node_type` - (Required) Node type.
+  - `driver_node_type` - (Optional) Driver node type.
+  - `max_number_of_workers` - (Optional) Max workers.
+  - `min_number_of_workers` - (Optional) Min workers (default: 1).
+  - `spark_config` - (Optional) Key-value pairs for Spark configuration.
+  - `spark_environment_variables` - (Optional) Spark environment variables.
+  - `custom_tags` - (Optional) Tags for the cluster.
+  - `init_scripts` - (Optional) Initialization scripts.
+  - `log_destination` - (Optional) Log storage location.
 
 Type:
 
@@ -585,17 +584,17 @@ Default: `{}`
 
 ### <a name="input_linked_service_key_vault"></a> [linked\_service\_key\_vault](#input\_linked\_service\_key\_vault)
 
-Description:     A map of Azure Data Factory Linked Services for Azure Key Vault, where each key represents a unique configuration.  
-    Each object in the map consists of the following properties:
+Description: A map of Azure Data Factory Linked Services for Azure Key Vault, where each key represents a unique configuration.  
+Each object in the map consists of the following properties:
 
-    - `name` - (Required) The unique name of the linked service.
-    - `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
-    - `key_vault_id` - (Required) The ID of the Azure Key Vault resource.
-    - `description` - (Optional) A description of the linked service.
-    - `integration_runtime_name` - (Optional) The integration runtime reference.
-    - `annotations` - (Optional) A list of tags to annotate the linked service.
-    - `parameters` - (Optional) A map of parameters.
-    - `additional_properties` - (Optional) Additional custom properties.
+- `name` - (Required) The unique name of the linked service.
+- `data_factory_id` - (Required) The ID of the Data Factory where the linked service is associated.
+- `key_vault_id` - (Required) The ID of the Azure Key Vault resource.
+- `description` - (Optional) A description of the linked service.
+- `integration_runtime_name` - (Optional) The integration runtime reference.
+- `annotations` - (Optional) A list of tags to annotate the linked service.
+- `parameters` - (Optional) A map of parameters.
+- `additional_properties` - (Optional) Additional custom properties.
 
 Type:
 
@@ -616,18 +615,17 @@ Default: `{}`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
-Description:     Controls the Resource Lock configuration for this resource. The following properties can be specified:
+Description: Controls the Resource Lock configuration for this resource. The following properties can be specified:
 
-    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
-    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+- `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+- `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
 
-    Example Input:
-    ```hcl
-    lock = {
-      kind = "CanNotDelete"
-      name = "Delete"
-    }
-    
+Example Input:
+```hcl
+lock = {
+  kind = "CanNotDelete"
+  name = "Delete"
+}
 ```
 
 Type:
@@ -651,35 +649,34 @@ Default: `false`
 
 ### <a name="input_private_endpoints"></a> [private\_endpoints](#input\_private\_endpoints)
 
-Description:     A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+Description: A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
 
-    - `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-    - `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-    - `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-    - `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-    - `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-    - `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-    - `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-    - `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-    - `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-    - `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-    - `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-    - `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-    - `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-      - `name` - The name of the IP configuration.
-      - `private_ip_address` - The private IP address of the IP configuration.
+- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
+- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
+- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
+- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
+- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
+- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
+- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
+- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
+- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
+- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
+- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
+- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  - `name` - The name of the IP configuration.
+  - `private_ip_address` - The private IP address of the IP configuration.
 
-    Example Input:
+Example Input:
 
-    ```hcl
-    private_endpoints = {
-      endpoint1 = {
-        subnet_resource_id            = azurerm_subnet.endpoint.id
-        private_dns_zone_group_name   = "private-dns-zone-group"
-        private_dns_zone_resource_ids = [azurerm_private_dns_zone.this.id]
-      }
-    }
-    
+```hcl
+private_endpoints = {
+  endpoint1 = {
+    subnet_resource_id            = azurerm_subnet.endpoint.id
+    private_dns_zone_group_name   = "private-dns-zone-group"
+    private_dns_zone_resource_ids = [azurerm_private_dns_zone.this.id]
+  }
+}
 ```
 
 Type:
@@ -753,14 +750,14 @@ Default: `null`
 
 ### <a name="input_vsts_configuration"></a> [vsts\_configuration](#input\_vsts\_configuration)
 
-Description:   Defines the VSTS configuration for the Data Factory.
-  - account\_name: Specifies the VSTS account name.
-  - branch\_name: Specifies the branch of the repository to get code from.
-  - project\_name: Specifies the name of the VSTS project.
-  - repository\_name: Specifies the name of the git repository.
-  - root\_folder: Specifies the root folder within the repository. Set to / for the top level.
-  - tenant\_id: Specifies the Tenant ID associated with the VSTS account.
-  - publishing\_enabled: Is automated publishing enabled? Defaults to true.
+Description: Defines the VSTS configuration for the Data Factory.
+- account\_name: Specifies the VSTS account name.
+- branch\_name: Specifies the branch of the repository to get code from.
+- project\_name: Specifies the name of the VSTS project.
+- repository\_name: Specifies the name of the git repository.
+- root\_folder: Specifies the root folder within the repository. Set to / for the top level.
+- tenant\_id: Specifies the Tenant ID associated with the VSTS account.
+- publishing\_enabled: Is automated publishing enabled? Defaults to true.
 
 Type:
 
