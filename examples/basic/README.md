@@ -22,15 +22,28 @@ provider "azurerm" {
   }
 }
 
+# Single Naming Module for all resources
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  version = "0.3.0"
+  prefix  = ["test"]
+  suffix  = ["03"]
+}
+
+# Create Resource Group with dynamically generated name
+resource "azurerm_resource_group" "rg" {
+  location = "southeastasia"
+  name     = module.naming.resource_group.name
+}
+
 module "basic" {
   source = "../../" # Adjust this path based on your module's location
 
   # Required variables (adjust values accordingly)
-  name                = "test-datafactory"
-  resource_group_name = "rg-jay-test-02"
-  location            = "southeastasia"
+  name                = module.naming.data_factory.name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 }
-
 ```
 
 <!-- markdownlint-disable MD033 -->
@@ -44,7 +57,9 @@ The following requirements are needed by this module:
 
 ## Resources
 
-No resources.
+The following resources are used by this module:
+
+- [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -68,6 +83,12 @@ The following Modules are called:
 Source: ../../
 
 Version:
+
+### <a name="module_naming"></a> [naming](#module\_naming)
+
+Source: Azure/naming/azurerm
+
+Version: 0.3.0
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
