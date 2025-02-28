@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the Azure Cache for Redis module in its simplest form.
+This deploys the Azure Data Factory with Diagnostic Settings.
 
 ```hcl
 terraform {
