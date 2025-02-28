@@ -204,8 +204,8 @@ variable "integration_runtime_self_hosted" {
   }))
   default     = {}
   description = <<DESCRIPTION
-    A map of Azure Data Factory Self-hosted Integration Runtimes, where each key represents a unique configuration.
-    Each object in the map consists of the following properties:
+    A map of Azure Data Factory Self-hosted Integration Runtimes, where each key represents a unique configuration. Each object in the map consists of the following properties:
+
     - `data_factory_id` - (Required) The ID of the Data Factory where the integration runtime is associated.
     - `name` - (Required) The unique name of the integration runtime. Changing this forces a new resource to be created.
     - `description` - (Optional) A description of the integration runtime.
@@ -248,8 +248,8 @@ variable "linked_service_azure_blob_storage" {
   }))
   default     = {}
   description = <<DESCRIPTION
-    A map of Azure Blob Storage linked services, where each key represents a unique linked service configuration.
-    Each object in the map consists of the following properties:
+    A map of Azure Blob Storage linked services, where each key represents a unique linked service configuration. Each object in the map consists of the following properties:
+    
     - `name` - (Required) Specifies the name of the Azure Data Factory Linked Service.
     - `description` - (Optional) A description for the linked service.
     - `integration_runtime_name` - (Optional) The integration runtime reference associated with the linked service.
